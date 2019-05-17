@@ -11,22 +11,33 @@ RoutePlanner::RoutePlanner(RouteModel &model, float start_x, float start_y, floa
 	end_node	= &model.FindClosestNode(end_x, end_y);
 }
 
+std::vector<RouteModel::Node> RoutePlanner::ConstructFinalPath(RouteModel::Node *current_node){
+    std::vector<RouteModel::Node> path_found {};
+    distance = 0.0;
+
+    while( current_node->parent != nullptr){
+        path_found.push_back(*current_node);
+        distance += current_node->distance(*(current_node->parent));
+        current_node = current_node->parent;
+    }
+    // While loop ends,so current_node is the starting node of the search as its parent is nullptr.
+    path_found.push_back(*current_node);
+    distance *= m_Model.MetricScale();
+    return path_found;
+}
 void RoutePlanner::AStarSearch(){
 	start_node->visited = true;
 	open_list.push_back(start_node);
 	RouteModel::Node *current_node = nullptr;
 	
   	while(open_list.size() > 0){
-		current_node = NextNode();
-		if(current_node->distance(*end_node) == 0){
-			m_Model.path = ConstructFinalPath(current_node);
-			return;
-        }
-      	else {
-        	AddNeighbors(current_node);
-        }
+			current_node = NextNode();
+			if(current_node->distance(*end_node) == 0){
+				m_Model.path = ConstructFinalPath(current_node);
+				return;
+			}
+			AddNeighbors(current_node);
     }
-	
 }
 
 RouteModel::Node *RoutePlanner::NextNode(){
@@ -55,21 +66,4 @@ void RoutePlanner::AddNeighbors(RouteModel::Node *current_node){
     }
 
 	return;
-}
-
-std::vector<RouteModel::Node> RoutePlanner::ConstructFinalPath(RouteModel::Node *current_node){
-	std::vector<RouteModel::Node> path_found;
-  	RouteModel::Node parent;
-	distance = 0.0f;
-  
-  	while(current_node->parent != nullptr){
-    	path_found.push_back(*current_node);
-      	parent = *(current_node->parent);	
-      	distance += current_node->distance(parent);
-      	current_node = current_node->parent;
-    }
-  	path_found.push_back(*current_node);
-	distance *= m_Model.MetricScale();
-
-	return path_found;
 }

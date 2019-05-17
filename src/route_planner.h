@@ -14,18 +14,17 @@ class RoutePlanner {
 	float GetDistance() const {return distance;}
 	void AStarSearch();
   private:
-    // Add private variables or methods declarations here.
+		std::vector<RouteModel::Node> ConstructFinalPath(RouteModel::Node*);
     RouteModel &m_Model;
   	RouteModel::Node *start_node;
   	RouteModel::Node *end_node;
   	float distance;
-  	std::vector<RouteModel::Node*> open_list;
-	
+  	
+		std::vector<RouteModel::Node*> open_list;
     RouteModel::Node *NextNode();
   	
-	void AddNeighbors(RouteModel::Node *current_node);
+		void AddNeighbors(RouteModel::Node *current_node);
   	float CalculateHValue(RouteModel::Node *node);
-  	std::vector<RouteModel::Node> ConstructFinalPath(RouteModel::Node*);
 };
 
 #endif

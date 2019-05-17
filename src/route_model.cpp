@@ -30,18 +30,18 @@ RouteModel::Node *RouteModel::Node::FindNeighbor(std::vector<int> node_indices){
   	for(int node_index: node_indices){
       	node = parent_model->SNodes()[node_index];
     	if(distance(node) != 0 && !node.visited)
-          	if(closest_node == nullptr || this->distance(node) < this->distance(*closest_node))
-				closest_node = &parent_model->SNodes()[node_index];
-      
-      	return closest_node;
+        if(closest_node == nullptr || this->distance(node) < this->distance(*closest_node))
+					closest_node = &parent_model->SNodes()[node_index];
     }
+		
+		return closest_node;
 }
 
 void RouteModel::Node::FindNeighbors(){
     for(auto &road : parent_model->node_to_road[this->index]){
     	RouteModel::Node* neighbor = this->FindNeighbor(parent_model->Ways()[road->way].nodes);
       	if(neighbor != nullptr)
-          this->neighbors.push_back(neighbor);
+          this->neighbors.emplace_back(neighbor);
     }
 }
 
